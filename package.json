@@ -1,0 +1,61 @@
+{
+  "name": "@overengineered-solutions/workspace-bridge",
+  "version": "0.1.3",
+  "description": "Shared workspace-IDE integration for OES portfolio projects — CSP relaxations, security-header overrides, and iframe-bridge script wiring, all gated on the `IDE_SESSION_ID` env var set by OES's workspace sandbox at bind time.",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/esm/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/esm/index.d.ts",
+        "default": "./dist/esm/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/index.d.ts",
+        "default": "./dist/cjs/index.js"
+      }
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "pnpm run build:esm && pnpm run build:cjs && node scripts/post-build.mjs",
+    "build:esm": "tsc -p tsconfig.json",
+    "build:cjs": "tsc -p tsconfig.cjs.json",
+    "clean": "rm -rf dist tsconfig.tsbuildinfo tsconfig.cjs.tsbuildinfo",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "prepublishOnly": "pnpm run clean && pnpm run build"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "restricted"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/overengineered-solutions/workspace-bridge.git"
+  },
+  "homepage": "https://github.com/overengineered-solutions/workspace-bridge#readme",
+  "bugs": {
+    "url": "https://github.com/overengineered-solutions/workspace-bridge/issues"
+  },
+  "peerDependencies": {
+    "react": ">=18.0.0"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@types/react": "^19.0.0",
+    "typescript": "^5.7.0"
+  }
+}
