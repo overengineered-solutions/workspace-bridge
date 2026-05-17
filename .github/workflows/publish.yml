@@ -15,7 +15,11 @@ on:
 
 permissions:
   contents: read
-  packages: write
+  # id-token: write is required for npm provenance attestation
+  # (Sigstore-backed signature linking the published artifact to
+  # this exact workflow run + commit). See
+  # https://docs.npmjs.com/generating-provenance-statements
+  id-token: write
 
 jobs:
   publish:
@@ -31,8 +35,7 @@ jobs:
         with:
           node-version: 22
           cache: pnpm
-          registry-url: https://npm.pkg.github.com
-          scope: '@overengineered-solutions'
+          registry-url: https://registry.npmjs.org
 
       - run: pnpm install --no-frozen-lockfile
 
@@ -61,8 +64,8 @@ jobs:
           echo "--- tarball contents ---"
           tar -tzf *.tgz | head -40
 
-      - name: Publish to GitHub Packages
+      - name: Publish to npmjs with provenance
         if: startsWith(github.ref, 'refs/tags/v') || inputs.dry_run == 'false'
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: pnpm publish --no-git-checks --access restricted
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: pnpm publish --no-git-checks --access public --provenance

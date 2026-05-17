@@ -2,9 +2,13 @@
 
 ## 0.1.3 — 2026-05-17
 
-Repository relocation: moved from `overengineered-solutions/oes-project-testing` (private monorepo) to its own public repo at `overengineered-solutions/workspace-bridge`. Resolves the public-package-in-private-repo doctrine violation tracked at oes-project-testing#8.
+Repository relocation + registry migration.
 
-No API changes from 0.1.2. License changed from `UNLICENSED` (private-monorepo placeholder) to `MIT` for the public release.
+- **New home**: moved from `overengineered-solutions/oes-project-testing` (private monorepo) to its own public repo at `overengineered-solutions/workspace-bridge`. Resolves the public-package-in-private-repo doctrine violation tracked at oes-project-testing#8.
+- **Registry**: now publishes to **npmjs.org** (public, MIT-licensed) instead of GitHub Container Registry. Consumers can install with zero auth via `pnpm add @overengineered-solutions/workspace-bridge`; no `.npmrc` registry override needed.
+- **Provenance**: every published artifact carries a Sigstore-backed attestation linking it to the exact GitHub Actions workflow run + commit that built it. Verifiable via `npm audit signatures` or the npmjs package page's "Provenance" badge.
+- **License**: `UNLICENSED` (private-monorepo placeholder) → `MIT` for the public release.
+- No API changes from 0.1.2.
 
 ## 0.1.2 — 2026-05-17
 

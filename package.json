@@ -34,8 +34,9 @@
     "prepublishOnly": "pnpm run clean && pnpm run build"
   },
   "publishConfig": {
-    "registry": "https://npm.pkg.github.com",
-    "access": "restricted"
+    "registry": "https://registry.npmjs.org",
+    "access": "public",
+    "provenance": true
   },
   "repository": {
     "type": "git",
