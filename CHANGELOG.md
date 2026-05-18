@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.1.4 — 2026-05-17
+
+Fixes CSP-blocked bridge script in consumers using `'strict-dynamic'`.
+
+When `'strict-dynamic'` is present in a CSP's `script-src`, browsers ignore explicit script-src origins and `'self'` — only nonce-attached scripts can load. The bridge `<script>` tag was being silently CSP-blocked in primopicks (and any other consumer with a strict-dynamic CSP), even though `buildWorkspaceCsp` correctly added the bridge origin to script-src.
+
+- `<WorkspaceBridge />` now accepts an optional `nonce` prop, applied to the rendered `<script>` tag.
+- Consumers using strict-dynamic CSPs MUST pass the same per-request nonce they generate for their own CSP header. Read it from the middleware-set request header (e.g. `x-nonce`) via Next.js's `headers()` and thread it down.
+- README + JSDoc include the canonical Next.js pattern.
+
+No API breakage — `nonce` is optional. Consumers without strict-dynamic CSPs keep working unchanged.
+
 ## 0.1.3 — 2026-05-17
 
 Repository relocation + registry migration.

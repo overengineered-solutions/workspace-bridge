@@ -12,6 +12,21 @@ export type WorkspaceBridgeProps = {
    * staging / preview / locally-served bridge during development.
    */
   scriptSrc?: string;
+  /**
+   * CSP nonce to attach to the rendered `<script>` tag. REQUIRED if
+   * your consumer's CSP uses `'strict-dynamic'` — browsers ignore
+   * explicit script-src origins when `'strict-dynamic'` is present, so
+   * the only path for the bridge script to load is a nonce match. Read
+   * the nonce from your middleware's request header (e.g. `x-nonce`)
+   * via Next.js's `headers()` and pass it down here.
+   *
+   * Example (Next.js App Router):
+   *
+   *   import { headers } from 'next/headers'
+   *   const nonce = (await headers()).get('x-nonce') ?? undefined
+   *   return <WorkspaceBridge nonce={nonce} />
+   */
+  nonce?: string;
 };
 
 /**
@@ -58,7 +73,7 @@ export function WorkspaceBridge(
         data-session-set={String(active)}
         data-bridge-version={WORKSPACE_BRIDGE_VERSION}
       />
-      {active ? <script defer src={src} /> : null}
+      {active ? <script defer src={src} nonce={props.nonce} /> : null}
     </>
   );
 }
