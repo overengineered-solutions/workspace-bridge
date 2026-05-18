@@ -42,7 +42,15 @@ export function buildCspHeader(nonce: string): string {
 }
 ```
 
-In workspace mode, `buildWorkspaceCsp` augments `script-src` with the bridge-script origin and replaces `frame-ancestors 'none'` with the OES workspace-parent allowlist (`*.vercel.app` + `overengineeredsolutions.org`).
+In workspace mode, `buildWorkspaceCsp` augments `script-src` with the bridge-script origin **plus** the dev-React keywords (`'unsafe-eval' 'wasm-unsafe-eval'`, see below), and replaces `frame-ancestors 'none'` with the OES workspace-parent allowlist (`*.vercel.app` + `overengineeredsolutions.org`).
+
+### Why the `'unsafe-eval'` relaxation in workspace mode
+
+OES workspace sandboxes run the consuming app's `pnpm dev` server (per CLAUDE.md workspace-tier guidance). React DevTools, HMR, Turbopack's WASM loader, and Next.js's source-maps panel all evaluate code at runtime — without `'unsafe-eval'` + `'wasm-unsafe-eval'` in `script-src`, dev React refuses to start and the iframe shows a *"CSP header missing 'unsafe-eval'"* error.
+
+The package adds these keywords **only** when `isWorkspaceSandbox()` returns true (i.e. `IDE_SESSION_ID` is set on the sandbox process by OES's `buildIdeSandboxEnv`). Production, preview, and staging Vercel deploys do not set that env var, so their CSP stays HITRUST-locked.
+
+The sandbox itself is single-tenant, ephemeral (torn down between sessions), and network-egress-restricted at the Vercel Sandbox layer to a workspace allow-list — runtime-evaluated JS cannot reach beyond the allow-list, so the relaxation does not widen the data-exfiltration surface.
 
 ### `src/app/layout.tsx`
 

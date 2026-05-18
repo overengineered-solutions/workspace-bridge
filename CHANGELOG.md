@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.3.0 — 2026-05-18
+
+Fixes dev-React breaking inside the workspace iframe with CSP errors complaining that `'unsafe-eval'` is missing from `script-src`. `pnpm dev` bundles in every consuming sibling (React DevTools, HMR runtime, Turbopack's WASM loader, source-maps panel) all require `'unsafe-eval'` + `'wasm-unsafe-eval'`. v0.2.x extended `script-src` with the bridge origin only.
+
+**The fix:**
+- `WorkspaceCspExtensions` gains `scriptSrcKeywords: readonly string[]`. In workspace mode it carries `['unsafe-eval', 'wasm-unsafe-eval']`.
+- `buildWorkspaceCsp` now appends both keywords AND the bridge-script origin to any `script-src` directive.
+- `buildWorkspaceCspExtensions()` returns the keywords alongside `scriptSrcOrigins` for callers that splice manually.
+
+**HITRUST property:** the relaxation is gated on `isWorkspaceSandbox()`, which checks the OES-platform-set `IDE_SESSION_ID` env var. Production, preview, and staging deploys never see that env var, so prod CSP stays locked. The sandbox itself is ephemeral, single-tenant, and network-egress-restricted at the Vercel Sandbox layer to a workspace allow-list — in-iframe runtime-evaluated JS can't reach beyond it. Documented inline at `WorkspaceCspExtensions.scriptSrcKeywords` and in the new README "Why the `'unsafe-eval'` relaxation in workspace mode" section.
+
+No breaking API changes — the new field is additive on the return type. Consumers can upgrade with a plain `pnpm up`. Sigstore-attested release.
+
 ## 0.2.0 — 2026-05-18
 
 Fixes the empty-iframe failure on OES prod (`app.overengineeredsolutions.org`) and makes the workspace-parent allowlist env-driven so future origins (tenant-2, staging-of-staging, branded subdomains) need zero package bumps.

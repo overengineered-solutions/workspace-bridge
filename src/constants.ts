@@ -4,7 +4,7 @@
  * panels can detect version drift across iframe deploys without
  * inspecting npm metadata. Bump in lockstep with `package.json`.
  */
-export const WORKSPACE_BRIDGE_VERSION = "0.2.0";
+export const WORKSPACE_BRIDGE_VERSION = "0.3.0";
 
 /**
  * Built-in fallback URL for the iframe-side bridge script when the
