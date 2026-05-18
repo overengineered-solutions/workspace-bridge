@@ -1,4 +1,7 @@
-import { WORKSPACE_PARENT_ORIGINS, DEFAULT_BRIDGE_SCRIPT_URL } from "./constants.js";
+import {
+  resolveBridgeScriptUrl,
+  resolveWorkspaceParentOrigins,
+} from "./constants.js";
 import { isWorkspaceSandbox } from "./env.js";
 
 export type WorkspaceCspExtensions = {
@@ -23,15 +26,20 @@ export type WorkspaceCspExtensions = {
  *
  * Returns `null` when not in workspace mode (caller should leave CSP
  * untouched).
+ *
+ * v0.2.0: both origin lists are resolved at call time from env vars
+ * (`OES_WORKSPACE_PARENT_ORIGINS`, `OES_BRIDGE_SCRIPT_URL`) with safe
+ * fallbacks. No package bump needed to add a new parent origin.
  */
 export function buildWorkspaceCspExtensions(): WorkspaceCspExtensions | null {
   if (!isWorkspaceSandbox()) return null;
-  // Derive the bridge script's origin so script-src is correct even
-  // if the bridge URL ever moves.
-  const bridgeOrigin = new URL(DEFAULT_BRIDGE_SCRIPT_URL).origin;
+  // Derive the bridge script's origin from the resolver so script-src
+  // is correct even when the URL is overridden by env.
+  const bridgeOrigin = new URL(resolveBridgeScriptUrl()).origin;
+  const parentOrigins = resolveWorkspaceParentOrigins();
   return {
     scriptSrcOrigins: [bridgeOrigin],
-    frameAncestorsDirective: `frame-ancestors ${WORKSPACE_PARENT_ORIGINS.join(" ")}`,
+    frameAncestorsDirective: `frame-ancestors ${parentOrigins.join(" ")}`,
   };
 }
 

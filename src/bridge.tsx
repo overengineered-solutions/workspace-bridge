@@ -1,7 +1,7 @@
 import * as React from "react";
 import {
-  DEFAULT_BRIDGE_SCRIPT_URL,
   WORKSPACE_BRIDGE_VERSION,
+  resolveBridgeScriptUrl,
 } from "./constants.js";
 import { isWorkspaceSandbox } from "./env.js";
 
@@ -64,7 +64,7 @@ export function WorkspaceBridge(
   props: WorkspaceBridgeProps = {},
 ): React.JSX.Element {
   const active = isWorkspaceSandbox();
-  const src = props.scriptSrc ?? DEFAULT_BRIDGE_SCRIPT_URL;
+  const src = props.scriptSrc ?? resolveBridgeScriptUrl();
   return (
     <>
       <meta
