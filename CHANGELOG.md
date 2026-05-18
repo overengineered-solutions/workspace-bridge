@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.2.0 — 2026-05-18
+
+Fixes the empty-iframe failure on OES prod (`app.overengineeredsolutions.org`) and makes the workspace-parent allowlist env-driven so future origins (tenant-2, staging-of-staging, branded subdomains) need zero package bumps.
+
+**The bug:** v0.1.x hardcoded the `frame-ancestors` allowlist to `https://overengineeredsolutions.org` (apex) and `https://*.vercel.app`. The actual OES app deployment lives at `https://app.overengineeredsolutions.org`. CSP `frame-ancestors` strict-matches origins (no implicit subdomain coverage), so the prod parent was silently blocked — the iframe rendered as a browser "page unreachable" tile. Vercel preview deploys worked only because they match the `*.vercel.app` wildcard.
+
+**The fix:**
+- New `resolveWorkspaceParentOrigins()`: reads `OES_WORKSPACE_PARENT_ORIGINS` (comma-separated) at call time, falls back to a corrected built-in list that includes the `app.` subdomain. OES's `buildIdeSandboxEnv` will set the env var at sandbox bind time so the platform owns the allowlist.
+- New `resolveBridgeScriptUrl()`: reads `OES_BRIDGE_SCRIPT_URL` at call time, falls back to the OES app deployment. Lets the platform point at versioned/staging bridge URLs without re-publishing.
+- `DEFAULT_BRIDGE_SCRIPT_URL` constant updated from apex to `https://app.overengineeredsolutions.org/oes-ide-bridge.js` (the actual deployment). Re-exported for back-compat; prefer the resolver.
+- `buildWorkspaceCsp` / `buildWorkspaceCspExtensions` / `<WorkspaceBridge />` all call the resolvers at usage time.
+
+No breaking API changes — only the *values* served by the fallbacks differ. Consumers can upgrade with a plain `pnpm up` (no code change). Sigstore-attested release.
+
 ## 0.1.4 — 2026-05-17
 
 Fixes CSP-blocked bridge script in consumers using `'strict-dynamic'`.

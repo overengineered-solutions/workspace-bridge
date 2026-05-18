@@ -63,4 +63,6 @@ export { WorkspaceBridge, type WorkspaceBridgeProps } from "./bridge.js";
 export {
   DEFAULT_BRIDGE_SCRIPT_URL,
   WORKSPACE_BRIDGE_VERSION,
+  resolveBridgeScriptUrl,
+  resolveWorkspaceParentOrigins,
 } from "./constants.js";

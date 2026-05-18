@@ -1,6 +1,6 @@
 {
   "name": "@overengineered-solutions/workspace-bridge",
-  "version": "0.1.4",
+  "version": "0.2.0",
   "description": "Shared workspace-IDE integration for OES portfolio projects — CSP relaxations, security-header overrides, and iframe-bridge script wiring, all gated on the `IDE_SESSION_ID` env var set by OES's workspace sandbox at bind time.",
   "license": "MIT",
   "type": "module",
